@@ -13,15 +13,6 @@
               <input type="email" v-model="accounts.email">
               </div>
               <div class="col-6">
-                <label>Name:</label>
-              <input type="text" v-model="accounts.name"/>
-
-              </div>
-              <div class="col-6">
-                <label>UserName:</label>
-              <input type="text" v-model="accounts.username"/> 
-              </div>
-              <div class="col-6">
                 <label>Password:</label>
                 <input type="password" v-model="accounts.password"/>
              
@@ -35,6 +26,7 @@
         </div>
         </div>
       </div>
+      <h1>{{isLoging}}</h1>
     </div>
   </template>
   
@@ -72,18 +64,19 @@
       };
     },
   
-    computed: { ...mapGetters(["isCreating", "createdData"]) },
+    computed: { ...mapGetters(["isCreating", "createdData","isLoging" ]) },
   
     methods: {
       ...mapActions(["storeAccount"]),
       onSubmit() {
         console.log("post")
         this.storeAccount({
-          displayname: this.accounts.name,
           email: this.accounts.email,
-          userName: this.accounts.username,
           password: this.accounts.password,
-        });
+        })
+        .then(
+            this.$router.push({ path: '/products' })  
+        )
       },
     },
   };

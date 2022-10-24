@@ -1,13 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue';
 import Helper from '../views/Helper.vue';
 import NProgress from 'nprogress';
-
+import SignUp from '../views/SignUp.vue'
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: SignUp
   },
   {
     path: '/help',
@@ -25,7 +24,7 @@ const routes = [
   {
     path: '/products',
     name: 'Products',
-    component: () => import('../views/products/ProductList.vue')
+    component: () => import('../views/Home.vue')
   },
   {
     path: '/signUp',

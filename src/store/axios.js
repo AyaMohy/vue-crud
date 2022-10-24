@@ -1,11 +1,12 @@
 import axios from "axios";
+import Cookies from 'js-cookie'
 
 // Add a request interceptor
 axios.interceptors.request.use(
     config => {
         const token = 'localStorageService.getAccessToken()';
         if (token) {
-            config.headers['Authorization'] = `Bearer ${process.env.VUE_APP_API_KEY}`;
+            config.headers['Authorization'] = `Bearer ${Cookies.get('token')}`;
         }
         return config;
     },

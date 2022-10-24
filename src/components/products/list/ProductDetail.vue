@@ -55,7 +55,7 @@ export default {
         {{ product.url }}
       </div>
       <div class="">
-        <strong class="text-secondary">{{ product.id }}</strong>
+        <strong class="text-secondary">{{ product.email }}</strong>
       </div>
     </div>
     <div class="product-info-right">

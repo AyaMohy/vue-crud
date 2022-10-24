@@ -1,6 +1,6 @@
 // import { GET_ALL_PRODUCTS } from "./Types";
 import axios from 'axios';
-
+import Cookies from 'js-cookie'
 // initial state
 const state = () => ({
   products: [],
@@ -12,7 +12,8 @@ const state = () => ({
   isUpdating: false,
   updatedData: null,
   isDeleting: false,
-  deletedData: null
+  deletedData: null,
+  isLoging:false
 })
 
 // getters
@@ -25,7 +26,7 @@ const getters = {
   isUpdating: state => state.isUpdating,
   createdData: state => state.createdData,
   updatedData: state => state.updatedData,
-
+  isLoging: state => state.isLoging,
   isDeleting: state => state.isDeleting,
   deletedData: state => state.deletedData
 };
@@ -81,12 +82,20 @@ const actions = {
       });
   },
 
-  async storeProduct({ commit }, product) {
+  async storeProduct({ commit }, informations) {
     commit('setProductIsCreating', true);
-    await axios.post(`${process.env.VUE_APP_API_URL}products`, product)
+    await axios.post(`http://localhost:5000/api/Information`,
+      {
+        url: informations.url,
+        email: informations.email,
+        password: informations.password,
+        description: informations.description
+      }
+    )
       .then(res => {
-        commit('saveNewProducts', res.data.data);
-        commit('setProductIsCreating', false);
+        console.log("res of create", res)
+        // commit('saveNewProducts', res.data.data);
+        // commit('setProductIsCreating', false);
       }).catch(err => {
         console.log('error', err);
         commit('setProductIsCreating', false);
@@ -94,24 +103,23 @@ const actions = {
   },
 
   async storeAccount({ commit }, accounts) {
-       await axios.post('http://localhost:5000/api/Account/register', {
-          email: accounts.email,
-          password:accounts.password,
-          displayName:accounts.displayname,
-          userName:accounts.userName
-        })
-        .then(res=>{
-          console.log("rse post data: ", res.data)
-          // Cookies.set('logedIn', true);
-          // Cookies.set('token', res.data.result.token);
-        } ).catch(err => {
-          console.log('error post', err);
-          commit('setProductIsCreating', false);
-        });
-        
+    await axios.post('http://localhost:5000/api/Account/login', {
+      email: accounts.email,
+      password: accounts.password,
+    })
+      .then(res => {
+        console.log("rse post data: ", res.data.token)
+        Cookies.set('token', res.data.token);
+        commit('setIsLogin', true);
+
+      }).catch(err => {
+        console.log('error post', err);
+        commit('setIsLogin', false);
+        commit('setProductIsCreating', false);
+      });
   },
 
-  
+
 
   async updateProduct({ commit }, product) {
     commit('setProductIsUpdating', true);
@@ -134,8 +142,6 @@ const actions = {
       {
         headers: {
           'Content-Type': 'application/json',
-          'token':'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImJvYiIsIm5hbWVpZCI6IjFhYmVkY2RjLTZmODctNDA2Yy1iYjg5LTdjMzg4YzNjZWYwNSIsImVtYWlsIjoiYm9iQHRlc3QuY29tIiwibmJmIjoxNjY2NTUzNDc2LCJleHAiOjE2NjcxNTgyNzYsImlhdCI6MTY2NjU1MzQ3Nn0.-RHRYb_8uC7F_5XOkvQcYx7Sc72fPXc6c3XWqB7ATcuh94Dfbm7jgxX6WCTsGbR4LL7_RyDANt1stf71O_g7Yg'
-          // 'token': Cookies.get('token')
         }
       }
     )
@@ -143,7 +149,14 @@ const actions = {
       .then(res => {
         commit('setDeleteProduct', res.data);
         commit('setProductIsDeleting', false);
-      }).catch(err => {
+      })
+      .then(response=>{
+        console.log(response)
+         location.reload()
+      }
+
+      )
+      .catch(err => {
         console.log('error delete item', err);
         commit('setProductIsDeleting', false);
       });
@@ -199,7 +212,9 @@ const mutations = {
   setProductIsUpdating(state, isUpdating) {
     state.isUpdating = isUpdating
   },
-
+  setIsLogin(state,isLogin){
+    state.isLogin=isLogin
+  },
   setProductIsDeleting(state, isDeleting) {
     state.isDeleting = isDeleting
   },
